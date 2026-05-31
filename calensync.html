@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CaleSync — Never Miss a Meeting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f5f5f7; --surface: #ffffff; --surface2: #f5f5f7;
+  --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.14);
+  --text: #1d1d1f; --text-secondary: #6e6e73; --text-tertiary: #a1a1a6;
+  --blue: #0071e3; --blue-hover: #0077ed; --blue-light: #e8f1fb; --blue-text: #004fa3;
+  --green: #28a745; --green-light: #e6f4ea; --green-text: #155724;
+  --red: #d93025; --red-light: #fce8e6;
+  --orange: #f5a623; --orange-light: #fff3e0; --orange-text: #7a4f00;
+  --radius-sm: 8px; --radius-md: 12px; --radius-xl: 22px;
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000; --surface: #1c1c1e; --surface2: #2c2c2e;
+    --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+    --text: #f5f5f7; --text-secondary: #98989d; --text-tertiary: #636366;
+    --blue: #2997ff; --blue-hover: #47a5ff; --blue-light: #0a2540; --blue-text: #7bc4ff;
+    --green: #30d158; --green-light: #0a2a14; --green-text: #7deba0;
+    --red: #ff453a; --red-light: #2a0a09;
+    --orange: #ff9f0a; --orange-light: #2a1a00; --orange-text: #ffcc80;
+  }
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(245,245,247,0.88);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--border-strong);
+  padding: 0 32px; height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+@media (prefers-color-scheme: dark) { nav { background: rgba(0,0,0,0.88); } }
+.nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+.nav-logo-icon { width: 28px; height: 28px; background: var(--blue); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+.nav-logo-icon svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 1.8; }
+.nav-logo-text { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+#nav-user { display: none; align-items: center; gap: 8px; }
+.nav-avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--blue-text); flex-shrink: 0; }
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.nav-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.btn-signout { font-size: 12px; color: var(--text-secondary); background: none; border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm); padding: 5px 10px; cursor: pointer; font-family: var(--font); transition: background 0.15s; }
+.btn-signout:hover { background: var(--surface2); }
+
+/* LANDING */
+#page-landing { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 52px); padding: 40px 20px; text-align: center; }
+.landing-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-light); color: var(--blue-text); font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; margin-bottom: 24px; }
+h1 { font-size: clamp(34px, 6vw, 54px); font-weight: 600; letter-spacing: -2px; line-height: 1.08; margin-bottom: 18px; }
+h1 span { color: var(--blue); }
+.landing-sub { font-size: 17px; color: var(--text-secondary); line-height: 1.6; font-weight: 400; margin-bottom: 40px; max-width: 460px; }
+.signin-card { background: var(--surface); border-radius: var(--radius-xl); border: 0.5px solid var(--border); box-shadow: var(--shadow-lg); padding: 32px; width: 100%; max-width: 360px; }
+.signin-card-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+.signin-card-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; }
+.btn-google { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px 16px; background: var(--surface); border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; font-family: var(--font); transition: background 0.15s; }
+.btn-google:hover { background: var(--surface2); }
+.btn-google svg { width: 18px; height: 18px; flex-shrink: 0; }
+.divider { height: 0.5px; background: var(--border); margin: 20px 0; }
+.perm-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.perm-item:last-child { margin-bottom: 0; }
+.perm-icon { width: 24px; height: 24px; border-radius: 6px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.perm-icon svg { width: 13px; height: 13px; fill: none; stroke: var(--blue-text); stroke-width: 2; }
+.perm-title { font-size: 13px; font-weight: 500; }
+.perm-desc { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+
+/* APP PAGE */
+#page-app { display: none; }
+.hero { text-align: center; padding: 52px 32px 40px; max-width: 580px; margin: 0 auto; }
+.hero h1 { font-size: clamp(26px, 4vw, 40px); }
+.hero-sub { font-size: 16px; color: var(--text-secondary); line-height: 1.6; }
+.app-shell { max-width: 820px; margin: 0 auto 80px; padding: 0 20px; }
+.app-window { background: var(--surface); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); overflow: hidden; border: 0.5px solid var(--border); }
+.app-inner { display: flex; min-height: 540px; }
+
+/* SIDEBAR */
+.sidebar { width: 196px; background: var(--surface2); border-right: 0.5px solid var(--border); padding: 16px 0; flex-shrink: 0; }
+.sidebar-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.6px; padding: 0 16px; margin-bottom: 4px; margin-top: 14px; }
+.sidebar-label:first-child { margin-top: 0; }
+.sidebar-item { display: flex; align-items: center; gap: 9px; padding: 8px 14px; cursor: pointer; border-radius: var(--radius-sm); margin: 1px 8px; font-size: 13px; font-weight: 500; color: var(--text-secondary); transition: background 0.12s, color 0.12s; }
+.sidebar-item:hover { background: rgba(0,0,0,0.05); color: var(--text); }
+@media (prefers-color-scheme: dark) { .sidebar-item:hover { background: rgba(255,255,255,0.06); } }
+.sidebar-item.active { background: var(--blue); color: white; }
+.sidebar-item svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; flex-shrink: 0; }
+
+/* CONTENT */
+.content { flex: 1; padding: 24px; overflow-y: auto; min-width: 0; }
+.content-title { font-size: 20px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 20px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--surface2); border-radius: var(--radius-md); padding: 14px 16px; border: 0.5px solid var(--border); }
+.stat-num { font-size: 28px; font-weight: 700; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+.stat-num.blue { color: var(--blue); }
+.stat-num.green { color: var(--green); }
+.stat-num.gray { color: var(--text-tertiary); }
+.stat-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; }
+
+/* FORM */
+.field-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.select-wrap { position: relative; margin-bottom: 16px; }
+.select-wrap select { width: 100%; appearance: none; -webkit-appearance: none; background: var(--surface2); border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm); padding: 10px 36px 10px 12px; font-size: 14px; font-family: var(--font); color: var(--text); font-weight: 500; cursor: pointer; outline: none; transition: border-color 0.15s; }
+.select-wrap select:focus { border-color: var(--blue); }
+.select-wrap::after { content: ''; position: absolute; right: 13px; top: 50%; transform: translateY(-50%); border-left: 4px solid transparent; border-right: 4px solid transparent; border-top: 5px solid var(--text-tertiary); pointer-events: none; }
+
+/* CONNECTED ROW */
+.connected-row { display: flex; align-items: center; gap: 10px; background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 16px; }
+.cal-icon { width: 28px; height: 28px; background: var(--blue); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cal-icon svg { width: 14px; height: 14px; fill: none; stroke: white; stroke-width: 2; }
+.connected-body { flex: 1; min-width: 0; }
+.connected-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.connected-sub { font-size: 12px; color: var(--text-secondary); }
+.green-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+/* BUTTON */
+.btn-primary { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: var(--font); cursor: pointer; letter-spacing: -0.2px; transition: background 0.15s, transform 0.1s; }
+.btn-primary:hover { background: var(--blue-hover); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { background: var(--text-tertiary); cursor: default; transform: none; }
+
+/* TOAST */
+.toast { display: none; border-radius: var(--radius-sm); margin-top: 12px; padding: 10px 14px; font-size: 13px; font-weight: 500; text-align: center; }
+.toast.success { background: var(--green-light); color: var(--green-text); }
+.toast.error { background: var(--red-light); color: var(--red); }
+.toast.info { background: var(--blue-light); color: var(--blue-text); }
+
+/* LOG */
+.log-wrap { display: none; margin-top: 16px; }
+.log-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.log-box { background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); max-height: 160px; overflow-y: auto; }
+.log-row { padding: 7px 12px; border-bottom: 0.5px solid var(--border); font-size: 12px; font-family: 'SF Mono','Fira Code',monospace; }
+.log-row:last-child { border-bottom: none; }
+.log-row.ok { color: var(--green); }
+.log-row.err { color: var(--red); }
+.log-row.info { color: var(--text-secondary); }
+
+/* EVENTS */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-tertiary); font-size: 14px; }
+.event-item { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 0.5px solid var(--border); }
+.event-item:last-child { border-bottom: none; }
+.event-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.event-dot.accepted { background: var(--green); }
+.event-dot.pending { background: var(--blue); }
+.event-dot.declined { background: var(--red); }
+.event-dot.tentative { background: var(--orange); }
+.event-info { flex: 1; min-width: 0; }
+.event-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.event-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+.event-badge { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; flex-shrink: 0; }
+.event-badge.accepted { background: var(--green-light); color: var(--green-text); }
+.event-badge.pending, .event-badge.needsAction { background: var(--blue-light); color: var(--blue-text); }
+.event-badge.tentative { background: var(--orange-light); color: var(--orange-text); }
+.event-badge.declined { background: var(--red-light); color: var(--red); }
+
+/* SETUP */
+.step-item { display: flex; gap: 12px; padding: 14px 0; border-bottom: 0.5px solid var(--border); }
+.step-item:last-child { border-bottom: none; }
+.step-circle { width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.step-circle.done { background: var(--green); }
+.step-body-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.step-body-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+.step-path { display: inline-block; background: var(--surface2); border: 0.5px solid var(--border-strong); border-radius: 5px; padding: 3px 8px; font-size: 11px; font-family: 'SF Mono','Fira Code',monospace; color: var(--text-secondary); margin-top: 6px; line-height: 1.6; }
+.info-card { display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: var(--surface2); border: 0.5px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; }
+.info-icon { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.info-icon svg { width: 14px; height: 14px; fill: none; stroke: white; stroke-width: 2; }
+.info-icon.green { background: var(--green); }
+.info-icon.blue { background: var(--blue); }
+.info-icon.purple { background: #5856d6; }
+.info-card-title { font-size: 13px; font-weight: 600; }
+.info-card-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* PROGRESS BAR */
+.progress-wrap { height: 4px; background: var(--border); border-radius: 2px; margin: 12px 0; overflow: hidden; display: none; }
+.progress-bar { height: 100%; background: var(--blue); border-radius: 2px; width: 0%; transition: width 0.3s; }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .app-inner { flex-direction: column; }
+  .sidebar { width: 100%; padding: 0; border-right: none; border-bottom: 0.5px solid var(--border); display: flex; overflow-x: auto; padding: 8px 8px 6px; gap: 2px; }
+  .sidebar-label { display: none; }
+  .sidebar-item { flex-direction: column; gap: 2px; padding: 7px 12px; margin: 0; white-space: nowrap; font-size: 10px; }
+  .sidebar-item svg { width: 17px; height: 17px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  nav { padding: 0 16px; }
+  .nav-name { display: none; }
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+footer { text-align: center; padding: 40px 20px; font-size: 13px; color: var(--text-tertiary); border-top: 0.5px solid var(--border); }
+footer a { color: var(--text-secondary); text-decoration: none; }
+footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 1v3M11 1v3M2 7h12"/></svg>
+    </div>
+    <span class="nav-logo-text">CaleSync</span>
+  </a>
+  <div class="nav-right">
+    <div id="nav-user">
+      <div class="nav-avatar" id="nav-avatar"><span id="nav-initials"></span></div>
+      <span class="nav-name" id="nav-name"></span>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- LANDING -->
+<div id="page-landing">
+  <div class="landing-badge">
+    <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.5 3.5L6 9l-3 1.5.5-3.5L1 4.5l3.5-.5z"/></svg>
+    Google Calendar + iPhone
+  </div>
+  <h1>Never miss a<br><span>meeting again</span></h1>
+  <p class="landing-sub">Sign in with Google and CaleSync sets reminders on every meeting — accepted or not — so your iPhone alerts you every time, even through silent mode.</p>
+
+  <div class="signin-card">
+    <div class="signin-card-title">Sign in to get started</div>
+    <div class="signin-card-sub">CaleSync needs read + write access to your Google Calendar to fetch events and set reminders.</div>
+
+    <button class="btn-google" onclick="startSignIn()">
+      <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+        <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/>
+        <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
+        <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="perm-item">
+        <div class="perm-icon"><svg viewBox="0 0 13 13"><rect x="1" y="2" width="11" height="10" rx="1.5"/><path d="M1 5.5h11M4.5 2v2M8.5 2v2"/></svg></div>
+        <div><div class="perm-title">Read your calendar events</div><div class="perm-desc">Fetch meetings for the next 30 days</div></div>
+      </div>
+      <div class="perm-item">
+        <div class="perm-icon"><svg viewBox="0 0 13 13"><path d="M6.5 1a5.5 5.5 0 100 11 5.5 5.5 0 000-11zm0 3v3.5l2 1"/></svg></div>
+        <div><div class="perm-title">Set reminders on events</div><div class="perm-desc">Adds popup notifications to every meeting</div></div>
+      </div>
+      <div class="perm-item">
+        <div class="perm-icon"><svg viewBox="0 0 13 13"><path d="M6.5 1a3 3 0 100 6 3 3 0 000-6zM1.5 12a5 5 0 0110 0"/></svg></div>
+        <div><div class="perm-title">Basic profile info</div><div class="perm-desc">Name and photo shown in the header</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="page-app">
+  <div class="hero">
+    <h1>Your meetings, <span>always on time</span></h1>
+    <p class="hero-sub" style="margin-top:14px;">One tap syncs all your meetings and sets reminders that ring through silent mode.</p>
+  </div>
+
+  <div class="app-shell">
+    <div class="app-window">
+      <div class="app-inner">
+
+        <div class="sidebar">
+          <div class="sidebar-label">App</div>
+          <div class="sidebar-item active" onclick="switchTab('sync',this)">
+            <svg viewBox="0 0 15 15"><path d="M2 7.5A5.5 5.5 0 1013 7.5 5.5 5.5 0 002 7.5z"/><path d="M7.5 5v3l2 1"/></svg>
+            Sync
+          </div>
+          <div class="sidebar-item" onclick="switchTab('events',this)">
+            <svg viewBox="0 0 15 15"><rect x="1.5" y="2.5" width="12" height="11" rx="1.5"/><path d="M1.5 6.5h12M5 1.5v2M10 1.5v2"/></svg>
+            Events
+          </div>
+          <div class="sidebar-label">Help</div>
+          <div class="sidebar-item" onclick="switchTab('setup',this)">
+            <svg viewBox="0 0 15 15"><circle cx="7.5" cy="7.5" r="6"/><path d="M7.5 5v1.5M7.5 9v1"/></svg>
+            iOS Setup
+          </div>
+        </div>
+
+        <div class="content">
+
+          <!-- SYNC PANEL -->
+          <div class="panel active" id="panel-sync">
+            <div class="content-title">Sync meetings</div>
+
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-num blue" id="stat-total">—</div>
+                <div class="stat-label">Total meetings</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-num green" id="stat-done">—</div>
+                <div class="stat-label">Reminders set</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-num gray" id="stat-skip">—</div>
+                <div class="stat-label">Skipped</div>
+              </div>
+            </div>
+
+            <div class="field-label">Remind me before each meeting</div>
+            <div class="select-wrap">
+              <select id="remind-mins">
+                <option value="5">5 minutes</option>
+                <option value="10">10 minutes</option>
+                <option value="15" selected>15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="120">2 hours</option>
+              </select>
+            </div>
+
+            <div class="connected-row">
+              <div class="cal-icon">
+                <svg viewBox="0 0 14 14"><rect x="1" y="2" width="12" height="11" rx="1.5"/><path d="M1 6h12M4.5 1v2M9.5 1v2"/></svg>
+              </div>
+              <div class="connected-body">
+                <div class="connected-title" id="connected-email">Google Calendar</div>
+                <div class="connected-sub">Primary calendar · all invites included</div>
+              </div>
+              <div class="green-dot"></div>
+            </div>
+
+            <div class="progress-wrap" id="progress-wrap">
+              <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <button class="btn-primary" id="sync-btn" onclick="runSync()">Sync now</button>
+
+            <div class="toast" id="toast"></div>
+
+            <div class="log-wrap" id="log-wrap">
+              <div class="log-label">Activity</div>
+              <div class="log-box" id="log-box"></div>
+            </div>
+          </div>
+
+          <!-- EVENTS PANEL -->
+          <div class="panel" id="panel-events">
+            <div class="content-title">Upcoming meetings</div>
+            <div id="events-container">
+              <div class="empty-state">Hit Sync now to load your meetings</div>
+            </div>
+          </div>
+
+          <!-- SETUP PANEL -->
+          <div class="panel" id="panel-setup">
+            <div class="content-title">iOS setup</div>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;">Do these three steps once on your iPhone — CaleSync handles the reminders automatically after that.</p>
+
+            <div style="margin-bottom:20px;">
+              <div class="step-item">
+                <div class="step-circle done">✓</div>
+                <div>
+                  <div class="step-body-title">Allow notifications</div>
+                  <div class="step-body-desc">Turn on alerts for Google Calendar</div>
+                  <div class="step-path">Settings → Notifications → Google Calendar → Allow Notifications ON</div>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-circle">2</div>
+                <div>
+                  <div class="step-body-title">Set a loud alert sound</div>
+                  <div class="step-body-desc">Pick something you can't ignore</div>
+                  <div class="step-path">Settings → Notifications → Google Calendar → Sounds → Alarm</div>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-circle">3</div>
+                <div>
+                  <div class="step-body-title">Break through Do Not Disturb</div>
+                  <div class="step-body-desc">Rings even when your phone is on silent</div>
+                  <div class="step-path">Settings → Focus → Do Not Disturb → Apps → Add Google Calendar</div>
+                </div>
+              </div>
+              <div class="step-item">
+                <div class="step-circle">4</div>
+                <div>
+                  <div class="step-body-title">Sync your meetings</div>
+                  <div class="step-body-desc">Go to Sync tab and hit Sync now — done forever</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">What you get</div>
+            <div class="info-card">
+              <div class="info-icon green"><svg viewBox="0 0 14 14"><path d="M7 1a6 6 0 100 12A6 6 0 007 1zm0 3v3l2 1.5"/></svg></div>
+              <div><div class="info-card-title">Rings through silent mode</div><div class="info-card-sub">Focus override keeps you covered always</div></div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon blue"><svg viewBox="0 0 14 14"><rect x="1" y="2" width="12" height="10" rx="1.5"/><path d="M1 6h12M5 2v10"/></svg></div>
+              <div><div class="info-card-title">All invites covered</div><div class="info-card-sub">Accepted and pending both get reminders</div></div>
+            </div>
+            <div class="info-card">
+              <div class="info-icon purple"><svg viewBox="0 0 14 14"><path d="M2 7a5 5 0 1010 0 5 5 0 00-10 0M7 4v3l2 1"/></svg></div>
+              <div><div class="info-card-title">Re-sync anytime</div><div class="info-card-sub">New meeting added? Just tap Sync now again</div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>CaleSync — powered by Google Calendar API</p>
+    <p style="margin-top:6px;">Reminders set via Google Calendar and ring through iOS Focus mode.</p>
+  </footer>
+</div>
+
+<script>
+const CLIENT_ID = '429992946265-gqlkogrg2lq9gu77si33hk50ir7k051l.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/calendar openid profile email';
+
+let tokenClient = null;
+let accessToken = null;
+let allEvents = [];
+let currentUser = null;
+
+// ── On load: restore session ──────────────────────────────────────────
+window.addEventListener('load', () => {
+  const savedToken = sessionStorage.getItem('cs_token');
+  const savedUser  = sessionStorage.getItem('cs_user');
+  if (savedToken) {
+    accessToken  = savedToken;
+    currentUser  = savedUser ? JSON.parse(savedUser) : null;
+    showApp();
+  }
+});
+
+// ── Sign-in ───────────────────────────────────────────────────────────
+function startSignIn() {
+  if (!window.google) {
+    alert('Google Identity Services is still loading. Please wait a moment and try again.');
+    return;
+  }
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: async (resp) => {
+      if (resp.error) { console.error(resp); return; }
+      accessToken = resp.access_token;
+      sessionStorage.setItem('cs_token', accessToken);
+      await loadUserProfile();
+      showApp();
+    }
+  });
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+}
+
+async function loadUserProfile() {
+  try {
+    const res  = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: 'Bearer ' + accessToken }
+    });
+    currentUser = await res.json();
+    sessionStorage.setItem('cs_user', JSON.stringify(currentUser));
+  } catch(e) { console.warn('Profile fetch failed', e); }
+}
+
+// ── Show app after login ──────────────────────────────────────────────
+function showApp() {
+  document.getElementById('page-landing').style.display = 'none';
+  document.getElementById('page-app').style.display = 'block';
+
+  if (currentUser) {
+    const navUser = document.getElementById('nav-user');
+    navUser.style.display = 'flex';
+
+    const avatarEl = document.getElementById('nav-avatar');
+    if (currentUser.picture) {
+      avatarEl.innerHTML = `<img src="${currentUser.picture}" alt="avatar" referrerpolicy="no-referrer">`;
+    } else {
+      document.getElementById('nav-initials').textContent =
+        (currentUser.name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    }
+    document.getElementById('nav-name').textContent = currentUser.given_name || currentUser.name || '';
+    document.getElementById('connected-email').textContent = currentUser.email || 'Google Calendar';
+  }
+}
+
+// ── Sign-out ──────────────────────────────────────────────────────────
+function signOut() {
+  if (accessToken && window.google) {
+    google.accounts.oauth2.revoke(accessToken, () => {});
+  }
+  accessToken = null; currentUser = null; allEvents = [];
+  sessionStorage.removeItem('cs_token');
+  sessionStorage.removeItem('cs_user');
+
+  document.getElementById('page-app').style.display     = 'none';
+  document.getElementById('page-landing').style.display = 'flex';
+  document.getElementById('nav-user').style.display     = 'none';
+
+  // reset stats
+  ['stat-total','stat-done','stat-skip'].forEach(id => document.getElementById(id).textContent = '—');
+  document.getElementById('log-box').innerHTML  = '';
+  document.getElementById('log-wrap').style.display = 'none';
+  document.getElementById('events-container').innerHTML = '<div class="empty-state">Hit Sync now to load your meetings</div>';
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type || 'success');
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 4000);
+}
+
+// ── Activity log ──────────────────────────────────────────────────────
+function addLog(msg, type) {
+  document.getElementById('log-wrap').style.display = 'block';
+  const box = document.getElementById('log-box');
+  const row = document.createElement('div');
+  row.className = 'log-row ' + (type || 'info');
+  row.textContent = ({ ok: '✓ ', err: '✗ ', info: '→ ' }[type] || '  ') + msg;
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+}
+
+// ── Progress bar ──────────────────────────────────────────────────────
+function setProgress(pct) {
+  document.getElementById('progress-wrap').style.display = pct >= 100 ? 'none' : 'block';
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// ── Render events list ────────────────────────────────────────────────
+function getRsvp(ev) {
+  if (!ev.attendees) return 'accepted';
+  const me = ev.attendees.find(a => a.self);
+  return me ? me.responseStatus : 'accepted';
+}
+
+function renderEvents() {
+  const container = document.getElementById('events-container');
+  if (!allEvents.length) {
+    container.innerHTML = '<div class="empty-state">No events found in the next 30 days</div>';
+    return;
+  }
+
+  const badgeMap = {
+    accepted:    ['accepted', 'Confirmed'],
+    needsAction: ['needsAction', 'Invite pending'],
+    tentative:   ['tentative', 'Maybe'],
+    declined:    ['declined', 'Declined']
+  };
+
+  container.innerHTML = allEvents.map(ev => {
+    const d       = new Date(ev.start.dateTime || ev.start.date);
+    const dateStr = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+    const timeStr = ev.start.dateTime
+      ? d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
+      : 'All day';
+    const rsvp = getRsvp(ev);
+    const [badgeClass, badgeLabel] = badgeMap[rsvp] || ['pending', 'Invite'];
+    return `<div class="event-item">
+      <div class="event-dot ${rsvp === 'needsAction' ? 'pending' : rsvp}"></div>
+      <div class="event-info">
+        <div class="event-name">${escHtml(ev.summary || '(No title)')}</div>
+        <div class="event-meta">${dateStr} · ${timeStr}</div>
+      </div>
+      <span class="event-badge ${badgeClass}">${badgeLabel}</span>
+    </div>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Main sync ─────────────────────────────────────────────────────────
+async function runSync() {
+  if (!accessToken) { showToast('Not signed in — please sign in first', 'error'); return; }
+
+  const btn = document.getElementById('sync-btn');
+  btn.disabled = true; btn.textContent = 'Syncing…';
+  document.getElementById('log-box').innerHTML = '';
+  document.getElementById('log-wrap').style.display = 'none';
+  ['stat-total','stat-done','stat-skip'].forEach(id => document.getElementById(id).textContent = '…');
+  setProgress(0);
+
+  const mins = parseInt(document.getElementById('remind-mins').value);
+  const now  = new Date();
+  const end  = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+  try {
+    addLog('Fetching your calendar events…', 'info');
+
+    // ── Fetch events ────────────────────────────────────────────────
+    const params = new URLSearchParams({
+      timeMin:       now.toISOString(),
+      timeMax:       end.toISOString(),
+      singleEvents:  'true',
+      orderBy:       'startTime',
+      maxResults:    '250',
+      showDeleted:   'false'
+    });
+
+    const calRes = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params}`,
+      { headers: { Authorization: 'Bearer ' + accessToken } }
+    );
+
+    if (calRes.status === 401) {
+      // Token expired — force re-auth
+      sessionStorage.removeItem('cs_token');
+      accessToken = null;
+      showToast('Session expired — please sign in again', 'error');
+      setTimeout(signOut, 1500);
+      return;
+    }
+
+    if (!calRes.ok) {
+      const errData = await calRes.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `Calendar API error ${calRes.status}`);
+    }
+
+    const calData = await calRes.json();
+    allEvents = (calData.items || []).filter(e => e.start && e.status !== 'cancelled');
+
+    addLog(`Found ${allEvents.length} upcoming event${allEvents.length !== 1 ? 's' : ''}`, 'info');
+    document.getElementById('stat-total').textContent = allEvents.length;
+
+    if (!allEvents.length) {
+      showToast('No upcoming meetings found in the next 30 days', 'info');
+      renderEvents();
+      return;
+    }
+
+    // ── Patch reminders ─────────────────────────────────────────────
+    let done = 0, skipped = 0;
+
+    for (let i = 0; i < allEvents.length; i++) {
+      const ev = allEvents[i];
+      setProgress(Math.round((i / allEvents.length) * 100));
+
+      // Skip all-day events (no time = no meaningful reminder)
+      if (!ev.start.dateTime) {
+        addLog(`Skipped all-day event: ${ev.summary || '(No title)'}`, 'info');
+        skipped++;
+        document.getElementById('stat-skip').textContent = skipped;
+        continue;
+      }
+
+      // Check if reminder already exists at this interval
+      const existingOverrides = ev.reminders?.useDefault === false
+        ? (ev.reminders?.overrides || [])
+        : [];
+      const alreadySet = existingOverrides.some(r => r.method === 'popup' && r.minutes === mins);
+
+      if (alreadySet) {
+        addLog(`Already set: ${ev.summary || '(No title)'}`, 'ok');
+        done++;
+        document.getElementById('stat-done').textContent = done;
+        continue;
+      }
+
+      // Keep existing non-popup overrides, replace popup
+      const newOverrides = [
+        ...existingOverrides.filter(r => r.method !== 'popup'),
+        { method: 'popup', minutes: mins }
+      ];
+
+      try {
+        const patchRes = await fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/primary/events/${encodeURIComponent(ev.id)}`,
+          {
+            method: 'PATCH',
+            headers: {
+              Authorization:  'Bearer ' + accessToken,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              reminders: { useDefault: false, overrides: newOverrides }
+            })
+          }
+        );
+
+        if (patchRes.ok) {
+          done++;
+          addLog(`✓ ${ev.summary || '(No title)'}`, 'ok');
+        } else {
+          const errData = await patchRes.json().catch(() => ({}));
+          skipped++;
+          addLog(`Skipped: ${ev.summary || ev.id} (${errData.error?.message || patchRes.status})`, 'err');
+        }
+      } catch(e) {
+        skipped++;
+        addLog(`Error: ${ev.summary || ev.id}`, 'err');
+      }
+
+      document.getElementById('stat-done').textContent = done;
+      document.getElementById('stat-skip').textContent = skipped;
+    }
+
+    setProgress(100);
+    renderEvents();
+
+    const msg = `${done} reminder${done !== 1 ? 's' : ''} set${skipped ? ` · ${skipped} skipped` : ''}`;
+    showToast(msg, done > 0 ? 'success' : 'info');
+    addLog(`Done. ${msg}`, 'ok');
+
+  } catch(e) {
+    addLog('Error: ' + e.message, 'err');
+    showToast('Sync failed — see activity log below', 'error');
+    ['stat-total','stat-done','stat-skip'].forEach(id => document.getElementById(id).textContent = '—');
+    setProgress(100);
+  }
+
+  btn.disabled = false; btn.textContent = 'Sync now';
+}
+</script>
+</body>
+</html>
