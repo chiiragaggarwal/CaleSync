@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)file:///C:/Users/chira/Downloads/privacy_2.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — CaleSync</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./privacy_files/css2" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f5f7; --surface: #ffffff;
+    --border: rgba(0,0,0,0.08); --border-strong: rgba(0,0,0,0.14);
+    --text: #1d1d1f; --text-secondary: #6e6e73; --text-tertiary: #a1a1a6;
+    --blue: #0071e3; --blue-light: #e8f1fb; --blue-text: #004fa3;
+    --green: #28a745; --green-light: #e6f4ea; --green-text: #155724;
+    --radius-sm: 8px; --radius-md: 12px; --radius-xl: 22px;
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000; --surface: #1c1c1e;
+      --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+      --text: #f5f5f7; --text-secondary: #98989d; --text-tertiary: #636366;
+      --blue: #2997ff; --blue-light: #0a2540; --blue-text: #7bc4ff;
+      --green: #30d158; --green-light: #0a2a14; --green-text: #7deba0;
+    }
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(245,245,247,0.88);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 0.5px solid var(--border-strong);
+    padding: 0 32px; height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  @media (prefers-color-scheme: dark) { nav { background: rgba(0,0,0,0.88); } }
+  .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .nav-logo-icon { width: 28px; height: 28px; background: var(--blue); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .nav-logo-icon svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 1.8; }
+  .nav-logo-text { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+  .nav-link { font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 500; }
+  .nav-link:hover { text-decoration: underline; }
+
+  .hero {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 48px 32px 40px;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--blue-light); color: var(--blue-text);
+    font-size: 12px; font-weight: 600; padding: 5px 12px;
+    border-radius: 20px; margin-bottom: 16px;
+  }
+  .hero h1 { font-size: 36px; font-weight: 600; letter-spacing: -1.2px; margin-bottom: 10px; }
+  .hero p { font-size: 15px; color: var(--text-secondary); }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .toc {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-md); padding: 20px 24px; margin-bottom: 40px;
+  }
+  .toc-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .toc a { display: block; font-size: 14px; color: var(--blue); text-decoration: none; padding: 4px 0; border-bottom: 0.5px solid var(--border); }
+  .toc a:last-child { border-bottom: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  .section { margin-bottom: 40px; }
+  .section-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; background: var(--blue); color: white;
+    font-size: 12px; font-weight: 700; border-radius: 50%; margin-right: 8px; flex-shrink: 0;
+  }
+  h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 14px; display: flex; align-items: center; }
+  h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; margin-top: 16px; }
+  p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 12px; }
+  p:last-child { margin-bottom: 0; }
+  ul { margin: 8px 0 12px 0; padding-left: 20px; }
+  ul li { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 6px; }
+
+  .highlight-box {
+    background: var(--green-light); border: 0.5px solid var(--green);
+    border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 16px;
+  }
+  .highlight-box p { color: var(--green-text); margin: 0; font-weight: 500; }
+
+  .info-box {
+    background: var(--blue-light); border: 0.5px solid var(--blue);
+    border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 16px;
+  }
+  .info-box p { color: var(--blue-text); margin: 0; }
+
+  .divider { height: 0.5px; background: var(--border); margin: 40px 0; }
+
+  .contact-card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-md); padding: 24px; text-align: center;
+  }
+  .contact-card h3 { font-size: 17px; margin-bottom: 8px; }
+  .contact-card p { margin-bottom: 16px; }
+  .contact-card a {
+    display: inline-block; background: var(--blue); color: white;
+    font-size: 14px; font-weight: 600; padding: 10px 24px;
+    border-radius: var(--radius-sm); text-decoration: none;
+    font-family: var(--font);
+  }
+  .contact-card a:hover { opacity: 0.9; }
+
+  .updated-badge {
+    display: inline-flex; background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 20px; padding: 4px 12px; font-size: 12px;
+    color: var(--text-secondary); margin-bottom: 32px;
+  }
+
+  footer { text-align: center; padding: 32px 20px; font-size: 13px; color: var(--text-tertiary); border-top: 0.5px solid var(--border); }
+  footer a { color: var(--text-secondary); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="file:///C:/Users/chira/Downloads/calensync.html">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="2"></rect><path d="M5 1v3M11 1v3M2 7h12"></path></svg>
+    </div>
+    <span class="nav-logo-text">CaleSync</span>
+  </a>
+  <a class="nav-link" href="file:///C:/Users/chira/Downloads/calensync.html">← Back to app</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">
+    <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 1a5 5 0 100 10A5 5 0 006 1zm0 3v2.5l1.5 1"></path></svg>
+    Legal
+  </div>
+  <h1>Privacy Policy</h1>
+  <p>Last updated: June 1, 2026 · Effective immediately</p>
+</div>
+
+<div class="container">
+
+  <div class="updated-badge">Effective date: June 1, 2026</div>
+
+  <div class="highlight-box">
+    <p>🔒 CaleSync does not store, sell, or share your data. All processing happens directly between your browser and Google's servers.</p>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s1">1. Who we are</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s2">2. What data we access</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s3">3. How we use your data</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s4">4. What we do NOT do</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s5">5. Data storage</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s6">6. Third-party services</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s7">7. Your rights</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s8">8. Children's privacy</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s9">9. Changes to this policy</a>
+    <a href="file:///C:/Users/chira/Downloads/privacy_2.html#s10">10. Contact us</a>
+  </div>
+
+  <div class="section" id="s1">
+    <h2><span class="section-num">1</span>Who we are</h2>
+    <p>CaleSync is a web application built and maintained by Chirag Aggarwal (<a href="https://github.com/chiiragaggarwal" style="color:var(--blue)">@chiiragaggarwal</a>). The app is hosted on GitHub Pages at <strong>https://chiiragaggarwal.github.io/CaleSync</strong>.</p>
+    <p>CaleSync helps users set reminder notifications on their Google Calendar events so they never miss a meeting. The app runs entirely in your browser — there is no backend server, no database, and no data storage of any kind on our end.</p>
+  </div>
+
+  <div class="section" id="s2">
+    <h2><span class="section-num">2</span>What data we access</h2>
+    <p>When you sign in with Google, CaleSync requests the following permissions:</p>
+    <h3>Google Calendar data</h3>
+    <ul>
+      <li><strong>Read access:</strong> We read your upcoming calendar events for the next 30 days including event titles, start times, and RSVP status</li>
+      <li><strong>Write access:</strong> We modify the reminder settings on individual events to add popup notifications at your chosen interval</li>
+    </ul>
+    <h3>Google profile data</h3>
+    <ul>
+      <li>Your name and profile photo (displayed in the app header)</li>
+      <li>Your email address (displayed as the connected account)</li>
+    </ul>
+    <div class="info-box">
+      <p>CaleSync only accesses your <strong>primary calendar</strong>. We do not access other calendars, Gmail, Google Drive, or any other Google services.</p>
+    </div>
+  </div>
+
+  <div class="section" id="s3">
+    <h2><span class="section-num">3</span>How we use your data</h2>
+    <p>Your data is used solely to provide the core functionality of CaleSync:</p>
+    <ul>
+      <li>Fetching your upcoming events to display them in the Events tab</li>
+      <li>Patching reminder settings on each event via the Google Calendar API</li>
+      <li>Displaying your name and photo in the app navigation</li>
+    </ul>
+    <p>Your OAuth access token is stored in <strong>sessionStorage</strong> — a temporary browser storage that is automatically cleared when you close the browser tab. It is never sent to any server other than Google's own APIs.</p>
+  </div>
+
+  <div class="section" id="s4">
+    <h2><span class="section-num">4</span>What we do NOT do</h2>
+    <p>We want to be explicitly clear about what CaleSync does not do:</p>
+    <ul>
+      <li>❌ We do <strong>not</strong> store your calendar data on any server</li>
+      <li>❌ We do <strong>not</strong> sell or share your data with third parties</li>
+      <li>❌ We do <strong>not</strong> use your data for advertising or analytics</li>
+      <li>❌ We do <strong>not</strong> retain your OAuth token after your session ends</li>
+      <li>❌ We do <strong>not</strong> access your emails, contacts, or other Google services</li>
+      <li>❌ We do <strong>not</strong> create accounts or user profiles</li>
+      <li>❌ We do <strong>not</strong> track your usage or behaviour</li>
+    </ul>
+  </div>
+
+  <div class="section" id="s5">
+    <h2><span class="section-num">5</span>Data storage</h2>
+    <p>CaleSync has <strong>no backend server and no database</strong>. The app is a static HTML file hosted on GitHub Pages.</p>
+    <p>The only data stored locally on your device is:</p>
+    <ul>
+      <li><strong>sessionStorage:</strong> Your OAuth access token and basic profile info (name, email, photo URL). This is cleared automatically when you close the browser tab or click Sign out.</li>
+    </ul>
+    <p>No data from your Google account is ever transmitted to, stored on, or processed by any server other than Google's own servers.</p>
+  </div>
+
+  <div class="section" id="s6">
+    <h2><span class="section-num">6</span>Third-party services</h2>
+    <p>CaleSync uses the following third-party services:</p>
+    <h3>Google Identity Services</h3>
+    <p>Used for authentication. When you sign in, you interact directly with Google's OAuth system. Google's own <a href="https://policies.google.com/privacy" style="color:var(--blue)">Privacy Policy</a> and <a href="https://policies.google.com/terms" style="color:var(--blue)">Terms of Service</a> apply to this interaction.</p>
+    <h3>Google Calendar API</h3>
+    <p>Used to read events and set reminders. All API calls are made directly from your browser to Google's servers using your access token.</p>
+    <h3>Google Fonts</h3>
+    <p>Used to load the Inter typeface. Google may log font requests per their <a href="https://policies.google.com/privacy" style="color:var(--blue)">Privacy Policy</a>.</p>
+    <h3>GitHub Pages</h3>
+    <p>Used to host the app. GitHub may collect standard web server logs (IP address, browser type) per their <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" style="color:var(--blue)">Privacy Statement</a>.</p>
+  </div>
+
+  <div class="section" id="s7">
+    <h2><span class="section-num">7</span>Your rights</h2>
+    <p>Since CaleSync does not store your data, there is nothing for us to delete or provide. However, you have full control over your data:</p>
+    <ul>
+      <li><strong>Revoke access anytime:</strong> Go to <a href="https://myaccount.google.com/permissions" style="color:var(--blue)">myaccount.google.com/permissions</a> and remove CaleSync</li>
+      <li><strong>Sign out:</strong> Clicking Sign out in the app clears your session immediately</li>
+      <li><strong>Remove reminders:</strong> You can manually remove any reminder set by CaleSync directly in Google Calendar</li>
+    </ul>
+  </div>
+
+  <div class="section" id="s8">
+    <h2><span class="section-num">8</span>Children's privacy</h2>
+    <p>CaleSync is not directed at children under the age of 13. We do not knowingly collect any personal information from children. If you believe a child has used this app, please contact us and we will take appropriate steps.</p>
+  </div>
+
+  <div class="section" id="s9">
+    <h2><span class="section-num">9</span>Changes to this policy</h2>
+    <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated effective date. We encourage you to review this policy periodically.</p>
+    <p>Continued use of CaleSync after any changes constitutes acceptance of the updated policy.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" id="s10">
+    <h2><span class="section-num">10</span>Contact us</h2>
+    <div class="contact-card">
+      <h3>Questions about this policy?</h3>
+      <p>If you have any questions or concerns about how CaleSync handles your data, feel free to reach out.</p>
+      <a href="https://github.com/chiiragaggarwal" target="_blank">Contact via GitHub</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p><a href="file:///C:/Users/chira/Downloads/calensync.html">CaleSync</a> · <a href="file:///C:/Users/chira/Downloads/privacy.html">Privacy Policy</a></p>
+  <p style="margin-top:6px;">© 2026 Chirag Aggarwal. All rights reserved.</p>
+</footer>
+
+
+
+</body></html>
